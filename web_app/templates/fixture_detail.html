@@ -1,0 +1,342 @@
+{% extends 'base.html' %}
+
+{% block title %}Fixture Details - AFL Prediction System{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">
+            <i class="fas fa-calendar-alt me-2"></i>
+            {{ fixture.home_team }} vs {{ fixture.away_team }}
+        </h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Match Details</h5>
+                        <p class="card-text">
+                            <i class="fas fa-calendar me-2"></i>Date: {{ fixture.match_date.strftime('%d %b %Y') }}<br>
+                            <i class="fas fa-map-marker-alt me-2"></i>Venue: {{ fixture.venue }}<br>
+                            <i class="fas fa-hashtag me-2"></i>Round: {{ fixture.round_number }}<br>
+                            <i class="fas fa-trophy me-2"></i>Season: {{ fixture.season }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="row align-items-center">
+                            <div class="col-5 text-end">
+                                <h5>{{ fixture.home_team }}</h5>
+                            </div>
+                            <div class="col-2">
+                                <h4>vs</h4>
+                            </div>
+                            <div class="col-5 text-start">
+                                <h5>{{ fixture.away_team }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-users me-2"></i>{{ fixture.home_team }} Predictions
+                </h4>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="homeTeamTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-disposals-tab" data-bs-toggle="tab" 
+                                data-bs-target="#home-disposals" type="button" role="tab" 
+                                aria-controls="home-disposals" aria-selected="true">
+                            Disposals
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="home-goals-tab" data-bs-toggle="tab" 
+                                data-bs-target="#home-goals" type="button" role="tab" 
+                                aria-controls="home-goals" aria-selected="false">
+                            Goals
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content mt-3" id="homeTeamTabsContent">
+                    <div class="tab-pane fade show active" id="home-disposals" role="tabpanel" 
+                         aria-labelledby="home-disposals-tab">
+                        {% if home_team_predictions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Player</th>
+                                        <th>Predicted</th>
+                                        <th>Confidence</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for prediction in home_team_predictions|sort(attribute='predicted_disposals', reverse=True) %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('player_detail', player_id=prediction.player_id) }}">
+                                                {{ prediction.player.name }}
+                                            </a>
+                                        </td>
+                                        <td>{{ prediction.predicted_disposals|round(1) }}</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar bg-success" role="progressbar" 
+                                                     style="width: {{ prediction.disposal_confidence * 100 }}%" 
+                                                     aria-valuenow="{{ prediction.disposal_confidence * 100 }}" 
+                                                     aria-valuemin="0" aria-valuemax="100">
+                                                    {{ (prediction.disposal_confidence * 100)|round|int }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if current_user.is_authenticated %}
+                                            <form method="POST" action="{{ url_for('save_prediction') }}" class="d-inline">
+                                                <input type="hidden" name="prediction_id" value="{{ prediction.id }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-bookmark"></i> Save
+                                                </button>
+                                            </form>
+                                            {% else %}
+                                            <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-sign-in-alt"></i> Login to Save
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No disposal predictions available for {{ fixture.home_team }}.
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="home-goals" role="tabpanel" 
+                         aria-labelledby="home-goals-tab">
+                        {% if home_team_predictions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Player</th>
+                                        <th>Predicted</th>
+                                        <th>Confidence</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for prediction in home_team_predictions|sort(attribute='predicted_goals', reverse=True) %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('player_detail', player_id=prediction.player_id) }}">
+                                                {{ prediction.player.name }}
+                                            </a>
+                                        </td>
+                                        <td>{{ prediction.predicted_goals|round(1) }}</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar bg-warning text-dark" role="progressbar" 
+                                                     style="width: {{ prediction.goal_confidence * 100 }}%" 
+                                                     aria-valuenow="{{ prediction.goal_confidence * 100 }}" 
+                                                     aria-valuemin="0" aria-valuemax="100">
+                                                    {{ (prediction.goal_confidence * 100)|round|int }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if current_user.is_authenticated %}
+                                            <form method="POST" action="{{ url_for('save_prediction') }}" class="d-inline">
+                                                <input type="hidden" name="prediction_id" value="{{ prediction.id }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-bookmark"></i> Save
+                                                </button>
+                                            </form>
+                                            {% else %}
+                                            <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-sign-in-alt"></i> Login to Save
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No goal predictions available for {{ fixture.home_team }}.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-users me-2"></i>{{ fixture.away_team }} Predictions
+                </h4>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="awayTeamTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="away-disposals-tab" data-bs-toggle="tab" 
+                                data-bs-target="#away-disposals" type="button" role="tab" 
+                                aria-controls="away-disposals" aria-selected="true">
+                            Disposals
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="away-goals-tab" data-bs-toggle="tab" 
+                                data-bs-target="#away-goals" type="button" role="tab" 
+                                aria-controls="away-goals" aria-selected="false">
+                            Goals
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content mt-3" id="awayTeamTabsContent">
+                    <div class="tab-pane fade show active" id="away-disposals" role="tabpanel" 
+                         aria-labelledby="away-disposals-tab">
+                        {% if away_team_predictions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Player</th>
+                                        <th>Predicted</th>
+                                        <th>Confidence</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for prediction in away_team_predictions|sort(attribute='predicted_disposals', reverse=True) %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('player_detail', player_id=prediction.player_id) }}">
+                                                {{ prediction.player.name }}
+                                            </a>
+                                        </td>
+                                        <td>{{ prediction.predicted_disposals|round(1) }}</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar bg-success" role="progressbar" 
+                                                     style="width: {{ prediction.disposal_confidence * 100 }}%" 
+                                                     aria-valuenow="{{ prediction.disposal_confidence * 100 }}" 
+                                                     aria-valuemin="0" aria-valuemax="100">
+                                                    {{ (prediction.disposal_confidence * 100)|round|int }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if current_user.is_authenticated %}
+                                            <form method="POST" action="{{ url_for('save_prediction') }}" class="d-inline">
+                                                <input type="hidden" name="prediction_id" value="{{ prediction.id }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-bookmark"></i> Save
+                                                </button>
+                                            </form>
+                                            {% else %}
+                                            <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-sign-in-alt"></i> Login to Save
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No disposal predictions available for {{ fixture.away_team }}.
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="away-goals" role="tabpanel" 
+                         aria-labelledby="away-goals-tab">
+                        {% if away_team_predictions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Player</th>
+                                        <th>Predicted</th>
+                                        <th>Confidence</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for prediction in away_team_predictions|sort(attribute='predicted_goals', reverse=True) %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('player_detail', player_id=prediction.player_id) }}">
+                                                {{ prediction.player.name }}
+                                            </a>
+                                        </td>
+                                        <td>{{ prediction.predicted_goals|round(1) }}</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar bg-warning text-dark" role="progressbar" 
+                                                     style="width: {{ prediction.goal_confidence * 100 }}%" 
+                                                     aria-valuenow="{{ prediction.goal_confidence * 100 }}" 
+                                                     aria-valuemin="0" aria-valuemax="100">
+                                                    {{ (prediction.goal_confidence * 100)|round|int }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if current_user.is_authenticated %}
+                                            <form method="POST" action="{{ url_for('save_prediction') }}" class="d-inline">
+                                                <input type="hidden" name="prediction_id" value="{{ prediction.id }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-bookmark"></i> Save
+                                                </button>
+                                            </form>
+                                            {% else %}
+                                            <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-sign-in-alt"></i> Login to Save
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No goal predictions available for {{ fixture.away_team }}.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

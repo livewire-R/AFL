@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}Player Details - AFL Prediction System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-user me-2"></i>Player Profile</h4>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ player.name }}</h5>
+                <p class="card-text">
+                    <i class="fas fa-users me-2"></i>Team: {{ player.team }}<br>
+                    <i class="fas fa-running me-2"></i>Position: {{ player.position or 'N/A' }}<br>
+                </p>
+                <hr>
+                <h6>Season Averages</h6>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card bg-light mb-2">
+                            <div class="card-body p-2 text-center">
+                                <h3 class="mb-0">{{ player.avg_disposals|round(1) }}</h3>
+                                <small>Avg Disposals</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card bg-light mb-2">
+                            <div class="card-body p-2 text-center">
+                                <h3 class="mb-0">{{ player.avg_goals|round(1) }}</h3>
+                                <small>Avg Goals</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <h6>Form Metrics</h6>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card bg-light mb-2">
+                            <div class="card-body p-2 text-center">
+                                <h3 class="mb-0">{{ player.last_3_disposals|round(1) }}</h3>
+                                <small>Last 3 Disposals</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card bg-light mb-2">
+                            <div class="card-body p-2 text-center">
+                                <h3 class="mb-0">{{ player.last_3_goals|round(1) }}</h3>
+                                <small>Last 3 Goals</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card bg-light mb-2">
+                            <div class="card-body p-2 text-center">
+                                <h3 class="mb-0">{{ player.disposal_consistency|round(2) }}</h3>
+                                <small>Disposal Consistency</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card bg-light mb-2">
+                            <div class="card-body p-2 text-center">
+                                <h3 class="mb-0">{{ player.goal_consistency|round(2) }}</h3>
+                                <small>Goal Consistency</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card bg-light mb-2">
+                            <div class="card-body p-2 text-center">
+                                <h3 class="mb-0">{{ player.disposal_trend|round(2) }}</h3>
+                                <small>Disposal Trend</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card bg-light mb-2">
+                            <div class="card-body p-2 text-center">
+                                <h3 class="mb-0">{{ player.goal_trend|round(2) }}</h3>
+                                <small>Goal Trend</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-chart-line me-2"></i>Form Chart</h4>
+            </div>
+            <div class="card-body">
+                <img src="{{ url_for('static', filename=form_chart_path) }}" class="img-fluid" alt="Player Form Chart">
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Upcoming Predictions</h4>
+            </div>
+            <div class="card-body">
+                {% if player_predictions %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Opponent</th>
+                                <th>Predicted Disposals</th>
+                                <th>Predicted Goals</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prediction in player_predictions %}
+                            <tr>
+                                <td>{{ prediction.fixture.match_date.strftime('%d %b %Y') }}</td>
+                                <td>{{ prediction.fixture.away_team if player.team == prediction.fixture.home_team else prediction.fixture.home_team }}</td>
+                                <td>
+                                    <span class="badge bg-primary">{{ prediction.predicted_disposals|round(1) }}</span>
+                                    <div class="progress mt-1" style="height: 5px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" 
+                                             style="width: {{ prediction.disposal_confidence * 100 }}%" 
+                                             aria-valuenow="{{ prediction.disposal_confidence * 100 }}" 
+                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">{{ prediction.predicted_goals|round(1) }}</span>
+                                    <div class="progress mt-1" style="height: 5px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" 
+                                             style="width: {{ prediction.goal_confidence * 100 }}%" 
+                                             aria-valuenow="{{ prediction.goal_confidence * 100 }}" 
+                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if current_user.is_authenticated %}
+                                    <form method="POST" action="{{ url_for('save_prediction') }}" class="d-inline">
+                                        <input type="hidden" name="prediction_id" value="{{ prediction.id }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-bookmark"></i> Save
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-sign-in-alt"></i> Login to Save
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No upcoming predictions available for this player.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

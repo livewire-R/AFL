@@ -1,0 +1,128 @@
+/* Custom CSS for AFL Prediction System */
+
+/* General Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.card {
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+    transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Prediction Tables */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Player Stats */
+.player-stats-card {
+    background-color: #fff;
+    border-left: 5px solid #007bff;
+}
+
+.form-indicator {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.form-good {
+    background-color: #28a745;
+}
+
+.form-average {
+    background-color: #ffc107;
+}
+
+.form-poor {
+    background-color: #dc3545;
+}
+
+/* Login/Register Forms */
+.auth-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Fixtures */
+.fixture-card {
+    border-left: 5px solid #28a745;
+}
+
+.fixture-card .team-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+/* Predictions */
+.prediction-badge {
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.confidence-high {
+    background-color: #28a745;
+}
+
+.confidence-medium {
+    background-color: #ffc107;
+}
+
+.confidence-low {
+    background-color: #dc3545;
+}
+
+/* Profile */
+.profile-header {
+    background-color: #343a40;
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 5px solid white;
+}
+
+/* Footer */
+footer {
+    margin-top: 3rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-title {
+        font-size: 1.25rem;
+    }
+    
+    .table {
+        font-size: 0.9rem;
+    }
+}
