@@ -9,203 +9,121 @@ It cleans the data, merges files from different years, and prepares it for machi
 import os
 import pandas as pd
 import numpy as np
-import glob
 from datetime import datetime
+import logging
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Define paths
-BASE_DIR = '/home/ubuntu/afl_prediction_project'
-RAW_DATA_DIR = os.path.join(BASE_DIR, 'data/raw')
-PROCESSED_DATA_DIR = os.path.join(BASE_DIR, 'data/processed')
+BASE_DIR = r'C:\Users\ralph\OneDrive\Desktop\AFL'
+RAW_DATA_DIR = os.path.join(BASE_DIR, 'data', 'raw')
+PROCESSED_DATA_DIR = os.path.join(BASE_DIR, 'data', 'processed')
 
 # Ensure processed data directory exists
 os.makedirs(PROCESSED_DATA_DIR, exist_ok=True)
 
-def load_player_stats_data(year):
+def load_historical_data():
     """
-    Load player statistics data for a specific year
+    Load historical player statistics data (2020-2024)
     """
-    year_dir = os.path.join(RAW_DATA_DIR, str(year))
-    csv_files = glob.glob(os.path.join(year_dir, '*.csv'))
+    historical_dir = os.path.join(RAW_DATA_DIR, 'historical')
+    dfs = []
     
-    if not csv_files:
-        print(f"No CSV files found for year {year}")
+    for year in range(2020, 2026):
+        filename = f'afl-player-stats-{year}.csv'
+        if year == 2024:
+            filename = 'afl-player-stats-2024 (1).csv'
+            
+        file_path = os.path.join(historical_dir, filename)
+        if os.path.exists(file_path):
+            df = pd.read_csv(file_path)
+            df['Year'] = year
+            dfs.append(df)
+            logger.info(f"Loaded data for year {year}")
+        else:
+            logger.warning(f"No data file found for year {year}")
+    
+    if not dfs:
+        raise ValueError("No historical data found")
+    
+    return pd.concat(dfs, ignore_index=True)
+
+def load_current_data():
+    """
+    Load current season player statistics
+    """
+    current_dir = os.path.join(RAW_DATA_DIR, 'current')
+    current_file = os.path.join(current_dir, 'afl-player-stats-2025.csv')
+    
+    if os.path.exists(current_file):
+        df = pd.read_csv(current_file)
+        df['Year'] = 2025
+        logger.info("Loaded current season data")
+        return df
+    else:
+        logger.warning("No current season data found")
         return None
-    
-    # Load the first CSV file found for the year
-    df = pd.read_csv(csv_files[0])
-    df['Year'] = year
-    
-    print(f"Loaded data for {year}: {df.shape[0]} rows, {df.shape[1]} columns")
-    return df
 
 def clean_player_stats_data(df):
     """
     Clean and preprocess player statistics data
     """
-    if df is None or df.empty:
-        return None
-    
-    # Make a copy to avoid modifying the original dataframe
-    df_clean = df.copy()
-    
-    # Convert column names to lowercase and replace spaces with underscores
-    df_clean.columns = [col.lower().replace(' ', '_') for col in df_clean.columns]
-    
-    # Handle missing values
-    numeric_cols = df_clean.select_dtypes(include=['float64', 'int64']).columns
-    df_clean[numeric_cols] = df_clean[numeric_cols].fillna(0)
-    
-    # Convert percentage columns to proper decimal values
-    pct_cols = [col for col in df_clean.columns if 'pct' in col or '%' in col]
-    for col in pct_cols:
-        if col in df_clean.columns:
-            # Check if values are already in decimal form
-            if df_clean[col].max() > 1:
-                df_clean[col] = df_clean[col] / 100
-    
-    # Add a form metric (if possible)
-    if 'player' in df_clean.columns and 'gm' in df_clean.columns:
-        # Group by player and calculate rolling averages for key stats
-        # This will be expanded in the weekly update script
-        pass
-    
-    return df_clean
-
-def merge_all_years_data():
-    """
-    Merge player statistics data from all years (2020-2025)
-    """
-    all_data = []
-    
-    for year in range(2020, 2026):
-        df = load_player_stats_data(year)
-        if df is not None:
-            df_clean = clean_player_stats_data(df)
-            if df_clean is not None:
-                all_data.append(df_clean)
-    
-    if not all_data:
-        print("No data to merge")
-        return None
-    
-    # Concatenate all dataframes
-    merged_df = pd.concat(all_data, ignore_index=True)
-    print(f"Merged data: {merged_df.shape[0]} rows, {merged_df.shape[1]} columns")
-    
-    return merged_df
-
-def analyze_data(df):
-    """
-    Perform basic analysis on the merged data
-    """
-    if df is None or df.empty:
-        print("No data to analyze")
-        return
-    
-    print("\n=== Data Analysis ===")
-    
-    # Basic statistics
-    print("\nBasic Statistics:")
-    print(f"Total number of records: {df.shape[0]}")
-    print(f"Total number of features: {df.shape[1]}")
-    
-    # Check for missing values
-    missing_values = df.isnull().sum()
-    print("\nMissing Values:")
-    print(missing_values[missing_values > 0])
-    
-    # Distribution of players by year
-    if 'year' in df.columns:
-        year_counts = df['year'].value_counts().sort_index()
-        print("\nRecords by Year:")
-        print(year_counts)
-    
-    # Distribution of players by position (if available)
-    if 'position' in df.columns:
-        position_counts = df['position'].value_counts()
-        print("\nPlayers by Position:")
-        print(position_counts)
-    
-    # Key statistics for disposals and goals (our prediction targets)
-    target_cols = ['dis.', 'disposals', 'goals', 'gls_avg']
-    for col in target_cols:
+    # Convert numeric columns
+    numeric_cols = ['Games', 'Disposals', 'Goals', 'Behinds', 'Marks', 'Tackles']
+    for col in numeric_cols:
         if col in df.columns:
-            print(f"\nStatistics for {col}:")
-            print(df[col].describe())
+            df[col] = pd.to_numeric(df[col], errors='coerce')
     
-    # Correlation analysis for key metrics
-    if 'dis.' in df.columns or 'disposals' in df.columns:
-        disposal_col = 'dis.' if 'dis.' in df.columns else 'disposals'
-        corr_cols = [col for col in df.columns if df[col].dtype in ['float64', 'int64']]
-        if corr_cols:
-            corr_matrix = df[corr_cols].corr()
-            print(f"\nTop 10 features correlated with {disposal_col}:")
-            print(corr_matrix[disposal_col].sort_values(ascending=False).head(10))
+    # Calculate averages
+    if 'Games' in df.columns and 'Disposals' in df.columns:
+        df['Avg_Disposals'] = df['Disposals'] / df['Games']
+    if 'Games' in df.columns and 'Goals' in df.columns:
+        df['Avg_Goals'] = df['Goals'] / df['Games']
     
-    # Save analysis results
-    analysis_file = os.path.join(PROCESSED_DATA_DIR, 'data_analysis_summary.txt')
-    with open(analysis_file, 'w') as f:
-        f.write(f"AFL Player Statistics Data Analysis\n")
-        f.write(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
-        f.write(f"Total number of records: {df.shape[0]}\n")
-        f.write(f"Total number of features: {df.shape[1]}\n\n")
-        
-        if 'year' in df.columns:
-            f.write("Records by Year:\n")
-            for year, count in year_counts.items():
-                f.write(f"{year}: {count}\n")
-            f.write("\n")
-        
-        if 'position' in df.columns:
-            f.write("Players by Position:\n")
-            for position, count in position_counts.items():
-                f.write(f"{position}: {count}\n")
-            f.write("\n")
-        
-        for col in target_cols:
-            if col in df.columns:
-                f.write(f"Statistics for {col}:\n")
-                f.write(str(df[col].describe()) + "\n\n")
+    # Fill missing values
+    df = df.fillna(0)
     
-    print(f"\nAnalysis summary saved to {analysis_file}")
+    return df
 
-def save_processed_data(df):
+def process_data():
     """
-    Save the processed data to CSV and pickle formats
+    Main function to process all data
     """
-    if df is None or df.empty:
-        print("No data to save")
-        return
+    logger.info("Starting AFL player statistics data preprocessing...")
     
-    # Save as CSV
-    csv_path = os.path.join(PROCESSED_DATA_DIR, 'afl_player_stats_all_years.csv')
-    df.to_csv(csv_path, index=False)
-    print(f"Processed data saved to {csv_path}")
-    
-    # Save as pickle for faster loading in ML scripts
-    pickle_path = os.path.join(PROCESSED_DATA_DIR, 'afl_player_stats_all_years.pkl')
-    df.to_pickle(pickle_path)
-    print(f"Processed data saved to {pickle_path}")
-
-def main():
-    """
-    Main function to execute the preprocessing pipeline
-    """
-    print("Starting AFL player statistics data preprocessing...")
-    
-    # Merge data from all years
-    merged_df = merge_all_years_data()
-    
-    if merged_df is not None:
-        # Analyze the merged data
-        analyze_data(merged_df)
+    try:
+        # Load and merge historical and current data
+        historical_df = load_historical_data()
+        current_df = load_current_data()
         
-        # Save the processed data
-        save_processed_data(merged_df)
+        if current_df is not None:
+            df = pd.concat([historical_df, current_df], ignore_index=True)
+        else:
+            df = historical_df
         
-        print("Data preprocessing completed successfully!")
-    else:
-        print("Data preprocessing failed: No data to process")
+        # Clean and process the data
+        df = clean_player_stats_data(df)
+        
+        # Save processed data
+        output_file = os.path.join(PROCESSED_DATA_DIR, 'processed_player_stats.csv')
+        df.to_csv(output_file, index=False)
+        logger.info(f"Processed data saved to {output_file}")
+        
+        # Save as pickle for faster loading
+        pickle_file = os.path.join(PROCESSED_DATA_DIR, 'processed_player_stats.pkl')
+        df.to_pickle(pickle_file)
+        logger.info(f"Processed data saved to {pickle_file}")
+        
+        return df
+        
+    except Exception as e:
+        logger.error(f"Data preprocessing failed: {str(e)}")
+        raise
 
 if __name__ == "__main__":
-    main()
+    process_data()

@@ -23,16 +23,16 @@ import seaborn as sns
 import json
 
 # Define paths
-BASE_DIR = '/home/ubuntu/afl_prediction_project'
+BASE_DIR = r'C:\Users\ralph\OneDrive\Desktop\AFL'
 MODELS_DIR = os.path.join(BASE_DIR, 'models')
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 PROCESSED_DATA_DIR = os.path.join(DATA_DIR, 'processed')
-STATIC_DIR = os.path.join(BASE_DIR, 'web_app/static')
+STATIC_DIR = os.path.join(BASE_DIR, 'web_app', 'static')
 
 # Create Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'afl_prediction_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'web_app/afl_prediction.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'web_app', 'afl_prediction.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize database

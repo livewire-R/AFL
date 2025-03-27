@@ -27,7 +27,7 @@ logging.basicConfig(
 logger = logging.getLogger('model_training')
 
 # Define paths
-BASE_DIR = '/home/ubuntu/afl_prediction_project'
+BASE_DIR = r'C:\Users\ralph\OneDrive\Desktop\AFL'
 DATA_DIR = os.path.join(BASE_DIR, 'data')
 PROCESSED_DATA_DIR = os.path.join(DATA_DIR, 'processed')
 MODELS_DIR = os.path.join(BASE_DIR, 'models')
@@ -43,7 +43,7 @@ def load_training_data():
     """
     try:
         # Check if training data exists
-        train_data_path = os.path.join(PROCESSED_DATA_DIR, 'training_data.pkl')
+        train_data_path = os.path.join(PROCESSED_DATA_DIR, 'processed_player_stats.pkl')
         
         if not os.path.exists(train_data_path):
             logger.error(f"Training data file not found: {train_data_path}")
@@ -59,26 +59,52 @@ def load_training_data():
         logger.error(f"Error loading training data: {e}")
         return None
 
-def load_preprocessor():
+def create_preprocessor(train_data):
     """
-    Load the preprocessor for feature transformation
+    Create and fit a new preprocessor for feature transformation
+    """
+    from sklearn.preprocessing import StandardScaler
+    
+    try:
+        # Create a new preprocessor
+        preprocessor = StandardScaler()
+        
+        # Select numeric columns for scaling
+        numeric_cols = train_data.select_dtypes(include=['float64', 'int64']).columns
+        
+        # Fit the preprocessor
+        preprocessor.fit(train_data[numeric_cols])
+        
+        # Save the preprocessor
+        preprocessor_path = os.path.join(MODELS_DIR, 'preprocessor.pkl')
+        with open(preprocessor_path, 'wb') as f:
+            pickle.dump(preprocessor, f)
+        
+        logger.info("Created and saved new preprocessor")
+        return preprocessor
+    except Exception as e:
+        logger.error(f"Error creating preprocessor: {e}")
+        return None
+
+def load_or_create_preprocessor(train_data):
+    """
+    Load existing preprocessor or create a new one
     """
     try:
         # Check if preprocessor exists
         preprocessor_path = os.path.join(MODELS_DIR, 'preprocessor.pkl')
         
-        if not os.path.exists(preprocessor_path):
-            logger.error(f"Preprocessor file not found: {preprocessor_path}")
-            return None
-        
-        # Load preprocessor
-        with open(preprocessor_path, 'rb') as f:
-            preprocessor = pickle.load(f)
-        
-        logger.info("Loaded preprocessor")
-        return preprocessor
+        if os.path.exists(preprocessor_path):
+            # Load preprocessor
+            with open(preprocessor_path, 'rb') as f:
+                preprocessor = pickle.load(f)
+            logger.info("Loaded existing preprocessor")
+            return preprocessor
+        else:
+            # Create new preprocessor
+            return create_preprocessor(train_data)
     except Exception as e:
-        logger.error(f"Error loading preprocessor: {e}")
+        logger.error(f"Error handling preprocessor: {e}")
         return None
 
 def train_disposal_model(train_data, preprocessor):
@@ -666,11 +692,11 @@ def main():
         logger.error("Failed to load training data")
         return
     
-    # Load preprocessor
-    preprocessor = load_preprocessor()
+    # Load or create preprocessor
+    preprocessor = load_or_create_preprocessor(train_data)
     
     if preprocessor is None:
-        logger.error("Failed to load preprocessor")
+        logger.error("Failed to load or create preprocessor")
         return
     
     # Train disposal model
