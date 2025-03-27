@@ -1,4 +1,4 @@
-/* Custom CSS for AFL Prediction System */
+/* Enhanced CSS for AFL Prediction System */
 
 /* General Styles */
 body {
@@ -9,6 +9,13 @@ body {
 .card {
     border-radius: 0.5rem;
     margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
@@ -21,6 +28,10 @@ body {
     font-size: 1.5rem;
 }
 
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 /* Dashboard Cards */
 .dashboard-card {
     transition: transform 0.3s ease;
@@ -31,6 +42,10 @@ body {
 }
 
 /* Prediction Tables */
+.table-hover tbody tr {
+    transition: background-color 0.2s ease;
+}
+
 .table-hover tbody tr:hover {
     background-color: rgba(0, 123, 255, 0.1);
 }
@@ -61,10 +76,37 @@ body {
     background-color: #dc3545;
 }
 
+/* Team Logos */
+.team-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.team-logo:hover {
+    transform: scale(1.2);
+}
+
+.team-logo-large {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
 /* Login/Register Forms */
 .auth-form {
     max-width: 500px;
     margin: 0 auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.auth-form .form-control {
+    border-radius: 0.25rem;
+    padding: 0.75rem 1rem;
 }
 
 /* Fixtures */
@@ -78,10 +120,22 @@ body {
     object-fit: contain;
 }
 
+.fixture-vs {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #6c757d;
+}
+
 /* Predictions */
 .prediction-badge {
     font-size: 1rem;
     padding: 0.5rem 0.75rem;
+    border-radius: 2rem;
+    transition: transform 0.2s ease;
+}
+
+.prediction-badge:hover {
+    transform: scale(1.1);
 }
 
 .confidence-high {
@@ -102,6 +156,7 @@ body {
     color: white;
     padding: 2rem 0;
     margin-bottom: 2rem;
+    border-radius: 0.5rem;
 }
 
 .profile-avatar {
@@ -109,11 +164,94 @@ body {
     height: 100px;
     border-radius: 50%;
     border: 5px solid white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Charts and Visualizations */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 2rem;
+}
+
+/* Interactive Elements */
+.prediction-slider {
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.prediction-slider .form-range {
+    height: 1.5rem;
+}
+
+.prediction-slider .form-range::-webkit-slider-thumb {
+    background: #007bff;
+}
+
+.prediction-slider .form-range::-moz-range-thumb {
+    background: #007bff;
+}
+
+.prediction-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Tooltips */
+.custom-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.custom-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #343a40;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.custom-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.slide-in {
+    animation: slideIn 0.5s ease-out;
 }
 
 /* Footer */
 footer {
     margin-top: 3rem;
+    padding: 2rem 0;
+    background-color: #343a40;
+    color: #fff;
 }
 
 /* Responsive adjustments */
@@ -124,5 +262,15 @@ footer {
     
     .table {
         font-size: 0.9rem;
+    }
+    
+    .team-logo {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .team-logo-large {
+        width: 60px;
+        height: 60px;
     }
 }

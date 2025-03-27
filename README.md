@@ -1,37 +1,41 @@
-# AFL Prediction System
+# AFL Prediction System - README
 
-A machine learning system that predicts AFL player disposals and goals using data from wheeloratings.com.
+## Overview
 
-## Features
+This enhanced AFL prediction system uses advanced machine learning techniques to predict player disposals and goals for upcoming AFL matches. The system features multi-task learning, reinforcement learning, and an interactive web interface.
 
-- Predicts player disposals and goals for upcoming AFL matches
-- Updates weekly to incorporate the latest form data
-- Modern web interface with user authentication
-- Visualizes player form and prediction confidence
-- Allows users to save and track predictions
+## Key Features
 
-## Project Structure
+- **Multi-task Learning**: Simultaneously predicts disposals and goals with improved accuracy
+- **Reinforcement Learning**: Learns optimal prediction strategies over time based on past performance
+- **Manual Data Updates**: Structured directories for updating data as rounds progress
+- **Interactive Web Interface**: Enhanced with team logos, animations, and visualizations
+- **Comprehensive Data Field Mapping**: Standardized abbreviations and naming conventions for all AFL statistics
+
+## Directory Structure
 
 ```
-afl_prediction_project/
+AFL/
 ├── data/
-│   ├── raw/             # Raw data downloaded from wheeloratings.com
+│   ├── raw/             # Raw data files (manually updated)
+│   │   ├── historical/  # Historical player statistics
+│   │   ├── current/     # Current season statistics (update weekly)
+│   │   ├── fixtures/    # Upcoming match fixtures
+│   │   └── templates/   # Template CSV files
 │   └── processed/       # Processed data for ML models
 ├── models/              # Trained ML models
-├── scripts/
-│   ├── preprocess_data.py
-│   ├── analyze_features.py
-│   ├── model_development.py
-│   ├── evaluate_models.py
-│   ├── weekly_update.py
-│   └── exploratory_data_analysis.py
-└── web_app/
-    ├── app.py           # Flask application
-    ├── static/
-    │   ├── css/
-    │   ├── js/
-    │   └── images/
-    └── templates/       # HTML templates
+├── scripts/             # Python scripts
+│   ├── multi_task_learning.py       # Multi-task learning implementation
+│   ├── reinforcement_learning.py    # Reinforcement learning implementation
+│   ├── create_team_logos.py         # Script to create team logos
+│   └── [other scripts]              # Original and supporting scripts
+├── web_app/             # Flask web application
+│   ├── static/          # Static assets (CSS, JS, images)
+│   ├── templates/       # HTML templates
+│   └── app.py           # Flask application
+├── CHANGES.md           # Detailed description of all changes and enhancements
+├── USAGE.md             # Comprehensive usage instructions
+└── README.md            # This file
 ```
 
 ## Installation
@@ -47,7 +51,7 @@ afl_prediction_project/
    python app.py
    ```
 
-## Usage
+## Quick Start
 
 1. Start the web application:
    ```
@@ -55,29 +59,27 @@ afl_prediction_project/
    python app.py
    ```
 2. Access the web interface at http://localhost:5000
-3. Register an account and login
-4. View predictions for upcoming fixtures
-5. Save predictions to your profile
+3. Update data weekly in the `data/raw/current/` directory
+4. Run prediction scripts as needed:
+   ```
+   python scripts/multi_task_learning.py
+   python scripts/reinforcement_learning.py
+   ```
 
-## Weekly Updates
+## Documentation
 
-The system automatically updates weekly when new games are played. The update process:
-
-1. Downloads the latest player statistics from wheeloratings.com
-2. Calculates form metrics based on recent performances
-3. Generates new predictions for upcoming fixtures
-4. Updates the web application with the latest data
+- **CHANGES.md**: Detailed description of all changes and enhancements made to the system
+- **USAGE.md**: Comprehensive instructions on how to use the system
 
 ## Technologies Used
 
 - Python 3.10
+- TensorFlow for multi-task learning
 - Flask web framework
 - SQLAlchemy ORM
-- Scikit-learn for machine learning
-- Pandas for data processing
-- Matplotlib and Seaborn for visualization
 - Bootstrap 5 for frontend styling
+- Chart.js for data visualization
 
-## Data Source
+## Data Sources
 
-All player statistics are sourced from [wheeloratings.com](https://www.wheeloratings.com/afl_index.html), which provides comprehensive AFL player data from 2012-2025.
+Player statistics should be sourced from FootyWire.com or the official AFL website and manually saved to the appropriate directories.

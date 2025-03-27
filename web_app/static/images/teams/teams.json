@@ -1,0 +1,152 @@
+{
+  "adelaide": {
+    "name": "Adelaide Crows",
+    "initials": "ADL",
+    "colors": [
+      "#002b5c",
+      "#e21a23",
+      "#ffc424"
+    ]
+  },
+  "brisbane": {
+    "name": "Brisbane Lions",
+    "initials": "BRL",
+    "colors": [
+      "#7a0045",
+      "#00275d",
+      "#ffc424"
+    ]
+  },
+  "carlton": {
+    "name": "Carlton Blues",
+    "initials": "CAR",
+    "colors": [
+      "#0e1e2d",
+      "#0072ce"
+    ]
+  },
+  "collingwood": {
+    "name": "Collingwood Magpies",
+    "initials": "COL",
+    "colors": [
+      "#000000",
+      "#ffffff"
+    ]
+  },
+  "essendon": {
+    "name": "Essendon Bombers",
+    "initials": "ESS",
+    "colors": [
+      "#000000",
+      "#ff0000"
+    ]
+  },
+  "fremantle": {
+    "name": "Fremantle Dockers",
+    "initials": "FRE",
+    "colors": [
+      "#2a0d54",
+      "#ffffff"
+    ]
+  },
+  "geelong": {
+    "name": "Geelong Cats",
+    "initials": "GEE",
+    "colors": [
+      "#1c3c63",
+      "#ffffff"
+    ]
+  },
+  "gold_coast": {
+    "name": "Gold Coast Suns",
+    "initials": "GCS",
+    "colors": [
+      "#e21937",
+      "#ffc72c"
+    ]
+  },
+  "gws": {
+    "name": "GWS Giants",
+    "initials": "GWS",
+    "colors": [
+      "#f47920",
+      "#ffffff",
+      "#231f20"
+    ]
+  },
+  "hawthorn": {
+    "name": "Hawthorn Hawks",
+    "initials": "HAW",
+    "colors": [
+      "#4d2004",
+      "#ffc424"
+    ]
+  },
+  "melbourne": {
+    "name": "Melbourne Demons",
+    "initials": "MEL",
+    "colors": [
+      "#00246c",
+      "#e4002b"
+    ]
+  },
+  "north_melbourne": {
+    "name": "North Melbourne Kangaroos",
+    "initials": "NTH",
+    "colors": [
+      "#003f98",
+      "#ffffff"
+    ]
+  },
+  "port_adelaide": {
+    "name": "Port Adelaide Power",
+    "initials": "POR",
+    "colors": [
+      "#008aab",
+      "#000000",
+      "#ffffff"
+    ]
+  },
+  "richmond": {
+    "name": "Richmond Tigers",
+    "initials": "RIC",
+    "colors": [
+      "#000000",
+      "#ffc424"
+    ]
+  },
+  "st_kilda": {
+    "name": "St Kilda Saints",
+    "initials": "STK",
+    "colors": [
+      "#ed1c24",
+      "#000000",
+      "#ffffff"
+    ]
+  },
+  "sydney": {
+    "name": "Sydney Swans",
+    "initials": "SYD",
+    "colors": [
+      "#ed171f",
+      "#ffffff"
+    ]
+  },
+  "west_coast": {
+    "name": "West Coast Eagles",
+    "initials": "WCE",
+    "colors": [
+      "#003087",
+      "#f2a900"
+    ]
+  },
+  "western_bulldogs": {
+    "name": "Western Bulldogs",
+    "initials": "WBD",
+    "colors": [
+      "#0057b8",
+      "#e31937",
+      "#ffffff"
+    ]
+  }
+}

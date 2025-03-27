@@ -1,0 +1,4 @@
+player_name,team,opposition,match_date,venue,disposals,kicks,handballs,marks,goals,behinds,tackles,fantasy_points,round,season
+Player A,Richmond,Collingwood,2024-03-14,MCG,25,15,10,8,2,1,4,105,1,2024
+Player B,Collingwood,Richmond,2024-03-14,MCG,22,14,8,6,1,2,5,98,1,2024
+Player C,Geelong,Hawthorn,2024-03-15,GMHBA Stadium,28,18,10,9,3,1,3,120,1,2024

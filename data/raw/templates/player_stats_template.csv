@@ -1,0 +1,4 @@
+player_name,team,opposition,match_date,venue,disposals,kicks,handballs,marks,goals,behinds,tackles,round,season
+Player A,Richmond,Collingwood,2025-03-14,MCG,25,15,10,8,2,1,4,1,2025
+Player B,Collingwood,Richmond,2025-03-14,MCG,22,14,8,6,1,2,5,1,2025
+Player C,Geelong,Hawthorn,2025-03-15,GMHBA Stadium,28,18,10,9,3,1,3,1,2025
